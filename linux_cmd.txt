@@ -1,0 +1,2 @@
+# awk 取version=的值
+awk -F'"' '{i = 1; while (i <= NF) {if ($i ~/version=$/) print $(i+1);i++}}' lwz.log | sort | uniq
