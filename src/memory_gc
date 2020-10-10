@@ -1,0 +1,17 @@
+def memory_dump():
+    global DUMP_TIME
+    if time.time() - DUMP_TIME < 10:
+        return
+    # dump = open("memory.pickle", 'wb')
+    xs = []
+    for obj in gc.get_objects():
+        i = id(obj)
+        size = sys.getsizeof(obj, 0)
+        #    referrers = [id(o) for o in gc.get_referrers(obj) if hasattr(o, '__class__')]
+        referents = [id(o) for o in gc.get_referents(obj) if hasattr(o, '__class__')]
+        if hasattr(obj, '__class__'):
+            cls = str(obj.__class__)
+            xs.append({'id': i, 'class': cls, 'size': size, 'referents': len(referents)})
+    ret = sorted(xs, key=lambda x: x["size"], reverse=True)
+    logger_warn.error(ret[:10])
+    DUMP_TIME = time.time()
